@@ -61,4 +61,7 @@ set-cache:       # Обновление кэшированных данных (�
 ## Точки доступа
 `http://localhost:8080`
 
+## Benchmarks
+[Результаты](docs/benchmarks.md)
+
 
