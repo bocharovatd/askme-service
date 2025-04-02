@@ -1,59 +1,64 @@
-# Askme service
+# AskMe — платформа вопросов и ответов
 
-### Настройки nginx
-```
-upstream askme {
-    server 127.0.0.1:8000;
-}
 
-server {
-    listen 80 default_server;
-    server_name askme.com;
+AskMe — это сервис, вдохновленный Stack Overflow, со следующим функционалом:
 
-    access_log /var/log/nginx/askme.access.log;
-    error_log /var/log/nginx/askme.error.log;
+- Система публикации вопросов и ответов
+- Механизм голосования за опубликованные вопросы и ответы
+- Обновления оценок в реальном времени
+- Категоризация контента по тегам
+- Полнотекстовый поиск по вопросам
+- Проксирование и кэширование запросов
 
-    location / {
-        proxy_pass http://askme;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_cache mycache;
-        proxy_cache_valid 200 302 10m;
-        proxy_cache_valid 404      1m;
-    }
+## Технологический стек
 
-    location ^~ /upload/ {
-        root /home/user/projects/vk/web_task1/;
-        add_header Cache-Control "public, max-age=2592000";
-        gzip on;
-    }
+- **Бэкенд**: Django 4.1
+- **База данных**: PostgreSQL 15
+- **Веб-сервер**: Nginx 1.25
+- **Real-time**: Centrifugo v5
+- **Поиск**: Полнотекстовый поиск PostgreSQL
+- **Контейнеризация**: Docker с Docker Compose
 
-    location ^~ /static/ {
-        root /home/user/projects/vk/web_task1/;
-        add_header Cache-Control "public, max-age=2592000";
-        gzip on;
-    }
+## Управление инфраструктурой
 
-    location ~* \.(js|css|png|jpg)$ {
-        root /home/user/projects/vk/web_task1/static/;
-        add_header Cache-Control "public, max-age=2592000";
-        gzip on;
-    }
-}
+### Операции с контейнерами
+
+```makefile
+docker-build:    # Полная пересборка всех контейнеров
+docker-start:    # Запуск всех сервисов в фоновом режиме
+docker-stop:     # Корректная остановка контейнеров
+docker-clean:    # Удаление контейнеров, сетей и томов
+docker-rebuild:  # Полный перезапуск (clean → build → start)
 ```
 
-### Настройки cron
-```
-* * * * * cd /home/user/projects/vk/web_task1 && source venv/bin/activate && python manage.py generate_popular_tags
-* * * * * cd /home/user/projects/vk/web_task1 && source venv/bin/activate && python manage.py generate_best_members
+### Управление базой данных
+
+```makefile
+migrate:         # Применение новых миграций БД
+migrate-zero:    # Откат миграций для конкретного приложения (app=<имя>)
+fill-db:         # Заполнение БД тестовыми данными (ratio=<количество>)
+flush-db:        # Очистка данных с сохранением структуры БД
 ```
 
-### Centrifugo
-```
-./centrifugo --config=confug.json
+### Сервисные команды
+
+```makefile
+set-cache:       # Обновление кэшированных данных (топ пользователей/популярные теги)
 ```
 
-### Запуск через gunicorn
-```
-gunicorn askme.wsgi
-```
+## Развертывание
+
+### Первоначальная настройка
+1. Клонировать репозиторий
+2. Собрать контейнеры: `make docker-build`
+3. Запустить контейнер: `make docker-start`
+3. Применить миграции: `make migrate`
+4. Заполнить базу данными: `make fill-db ratio=10`
+5. Установить кэш на best members и popular tags: `make set-cache`
+
+Остальные команды: `make help`
+
+## Точки доступа
+`http://localhost:8080`
+
+

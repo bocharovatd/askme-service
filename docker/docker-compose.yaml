@@ -1,0 +1,59 @@
+services:
+  django:
+    build:
+      dockerfile: docker/Dockerfile
+      context: ..
+    container_name: askme-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      centrifugo:
+        condition: service_started
+    environment:
+      - CENTRIFUGO_URL=http://centrifugo:8010
+    ports:
+      - "8000:8000"
+
+  postgres:
+    image: postgres:15
+    container_name: askme-postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U askmeuser -d askmeproject" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - askme_postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: askmeproject
+      POSTGRES_USER: askmeuser
+      POSTGRES_PASSWORD: 19284501
+
+  nginx:
+    image: nginx:1.25.3
+    container_name: askme-nginx
+    volumes:
+      - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../static:/askme-service/static:ro
+      - ../upload:/askme-service/upload:ro
+    ports:
+      - "8080:80"
+    depends_on:
+      django:
+        condition: service_started
+
+  centrifugo:
+    image: centrifugo/centrifugo:v5
+    container_name: askme-centrifugo
+    volumes:
+      - ../centrifugo/config.json:/centrifugo/config.json:ro
+    ports:
+      - "8012:8010"
+    healthcheck:
+      test: [ "CMD", "centrifugo", "healthcheck" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  askme_postgres_data:
