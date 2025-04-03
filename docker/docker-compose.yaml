@@ -9,8 +9,6 @@ services:
         condition: service_healthy
       centrifugo:
         condition: service_started
-    environment:
-      - CENTRIFUGO_URL=http://centrifugo:8010
     ports:
       - "8000:8000"
 

@@ -99,8 +99,8 @@ def question(request, question_id):
                 answer_id = answer_form.save()
                 answer = Answer.objects.get(id=answer_id)
 
-                api_url = app_settings.SENTRIGFUGO_API_URL
-                api_key = app_settings.SENTRIGFUGO_API_KEY
+                api_url = app_settings.CENTRIFUGO_API_URL
+                api_key = app_settings.CENTRIFUGO_API_KEY
                 client = Client(api_url, api_key)
                 request = PublishRequest(channel=ws_channel_name,
                                          data={"text": answer.text,

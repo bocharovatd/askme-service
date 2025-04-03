@@ -138,8 +138,8 @@ MEDIA_URL = 'upload/'
 
 CENTRIFUGO_SECRET = "my_secret"
 CENTRIFUGO_WS_URL = "ws://localhost:8012/connection/websocket"
-SENTRIGFUGO_API_URL = "http://localhost:8010/api"
-SENTRIGFUGO_API_KEY = "my_api_key"
+CENTRIFUGO_API_URL = "http://askme-centrifugo:8010/api"
+CENTRIFUGO_API_KEY = "my_api_key"
 
 CACHES = {
     "default": {

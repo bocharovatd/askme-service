@@ -8,8 +8,9 @@
     "role": "superadmin"
   },
   "allowed_origins": [
+    "http://127.0.0.1:8080",
     "http://localhost:8080",
-    "http://127.0.0.1:8080"
+    "http://0.0.0.0:8080"
   ],
   "allow_subscribe_for_client": true,
   "port": "8010"
