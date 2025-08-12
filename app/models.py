@@ -39,7 +39,7 @@ class QuestionManager(models.Manager):
         return self.order_by('created_at').reverse()
 
     def get_hot(self):
-        return self.annotate(nlikes=Count('questionlike')).order_by('-nlikes')
+        return self.annotate(nlikes=Count('questionscore')).order_by('-nlikes')
 
 
 class Question(models.Model):
